@@ -4,7 +4,7 @@
     System Development A 2022/05/20
 
     quote :
-    Window : https://www.sejuku.net/blog/75467
+    Window : https://www.sejuku.net/blog/75467, https://teratail.com/questions/150883
     Widgets,Graphics :https://qiita.com/kenasman/items/73d01df973a25ae704e4
     MsgBox : https://webbibouroku.com/Blog/Article/qgis3-python-messagebox , https://doc.qt.io/qtforpython/PySide2/QtWidgets/QMessageBox.html
 """
@@ -30,8 +30,8 @@ class Reversi(QGraphicsItem):
         self.board = [[-1, -1, -1, -1, -1, -1, -1, -1],
                       [-1, -1, -1, -1, -1, -1, -1, -1],
                       [-1, -1, -1, -1, -1, -1, -1, -1],
-                      [-1, -1, -1, -1, -1, -1, -1, -1],
-                      [-1, -1, -1, -1, -1, -1, -1, -1],
+                      [-1, -1, -1, 1, 0, -1, -1, -1],
+                      [-1, -1, -1, 0, 1, -1, -1, -1],
                       [-1, -1, -1, -1, -1, -1, -1, -1],
                       [-1, -1, -1, -1, -1, -1, -1, -1],
                       [-1, -1, -1, -1, -1, -1, -1, -1]]  # 8x8盤面状態を保持する配列
@@ -50,7 +50,7 @@ class Reversi(QGraphicsItem):
         :param y: 盤面上での置く位置のy座標(0~7)
         :return: none
         '''
-        if x < 0 or y < 0 or x >= 7 or y >= 7:
+        if x < 0 or y < 0 or x > 8 or y > 8:
             # 盤面の範囲外は 石配置不可
             return
 
@@ -68,6 +68,7 @@ class Reversi(QGraphicsItem):
         :param widget: 描画する領域
         :return:
         '''
+        # 8x8盤面を描画
         painter.setPen(Qt.black)  # Pen 黒色
         painter.drawLine(0, 100, 800, 100)  # 横線 MainWindow上座標(0,100)から(800,100)まで直線を引く
         painter.drawLine(0, 200, 800, 200)
@@ -85,6 +86,36 @@ class Reversi(QGraphicsItem):
         painter.drawLine(600, 0, 600, 800)
         painter.drawLine(700, 0, 700, 800)
 
+        # 盤面上にて 黒石白石を描画する
+        for y in range(8):
+            for x in range(8):
+                if self.board[y][x] == self.ItemB:
+                    # 黒石を置く:
+                    painter.setPen(Qt.black)  # Pen 黒色
+                    painter.setBrush(Qt.black)  # 円を黒く塗りつぶすためのブラシ
+                    painter.drawEllipse(QPointF(50 + x*100, 50 + y*100), 30, 30)  # 座標QPointF(...)中心に 短径長径30の黒い丸を描く(内部は黒で塗りつぶす)
+
+                elif self.board[y][x] == self.ItemW:
+                    # 白石を置く:
+                    painter.setPen(Qt.white)  # Pen 白色
+                    painter.drawEllipse(QPointF(50 + x*100, 50 + y*100), 30, 30)  # 座標QPointF(...)中心に 短径長径30の黒線で丸を描く(内部塗りつぶしなし)
+
+    def mousePressEvent(self, event):
+        '''
+        マウスカーソルの位置座標とイベント取得->石を描画 イベントスロットに追加:
+        :param event: QtCore.QEvent -> QtGui.QEnterEvent
+        :return:
+        '''
+        pos = event.pos()  # QPoint():マウスカーソルの位置(受け取るwidgetでの相対位置)
+        self.put(int(pos.x()/100), int(pos.y()/100))  # 石をカーソル位置に置く
+        #self.judge()
+        self.update()  # 画面更新
+        super(Reversi, self).mousePressEvent(event)
+
+
+    def boundingRect(self):
+        return QRectF(0, 0, 800, 800)
+
 
 class MainWindow(QGraphicsView):
     '''
@@ -94,8 +125,8 @@ class MainWindow(QGraphicsView):
         super(MainWindow, self).__init__()
         scene = QGraphicsScene(self)
         self.reversi = Reversi()  # Reversiクラスのインスタンス生成
-        scene.addItem(self.reversi)
-        scene.setSceneRect(0, 0, 800, 800)
+        scene.addItem(self.reversi)  # QGraphicsSceneにインスタンスreversiを追加
+        scene.setSceneRect(0, 0, 800, 800)  # Windowのサイズ指定
         self.setScene(scene)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setWindowTitle("Reversi")
