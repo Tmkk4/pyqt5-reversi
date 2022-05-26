@@ -69,10 +69,21 @@ class Reversi(QGraphicsItem):
         :return:
         '''
         painter.setPen(Qt.black)  # Pen 黒色
-        painter.drawLine(0, 100, 300, 100)  # (0,100)から(300,100)まで線を引く
-        painter.drawLine(0, 200, 300, 200)
-        painter.drawLine(100, 0, 100, 300)
-        painter.drawLine(200, 0, 200, 300)
+        painter.drawLine(0, 100, 800, 100)  # 横線 MainWindow上座標(0,100)から(800,100)まで直線を引く
+        painter.drawLine(0, 200, 800, 200)
+        painter.drawLine(0, 300, 800, 300)
+        painter.drawLine(0, 400, 800, 400)
+        painter.drawLine(0, 500, 800, 500)
+        painter.drawLine(0, 600, 800, 600)
+        painter.drawLine(0, 700, 800, 700)
+
+        painter.drawLine(100, 0, 100, 800)  # 縦線 MainWindow上座標(100,0)から(100,800)まで直線を引く
+        painter.drawLine(200, 0, 200, 800)
+        painter.drawLine(300, 0, 300, 800)
+        painter.drawLine(400, 0, 400, 800)
+        painter.drawLine(500, 0, 500, 800)
+        painter.drawLine(600, 0, 600, 800)
+        painter.drawLine(700, 0, 700, 800)
 
 
 class MainWindow(QGraphicsView):
@@ -82,9 +93,9 @@ class MainWindow(QGraphicsView):
     def __init__(self):
         super(MainWindow, self).__init__()
         scene = QGraphicsScene(self)
-        self.ox = Ox()  # インスタンス生成
-        scene.addItem(self.ox)
-        scene.setSceneRect(0, 0, 300, 300)
+        self.reversi = Reversi()  # Reversiクラスのインスタンス生成
+        scene.addItem(self.reversi)
+        scene.setSceneRect(0, 0, 800, 800)
         self.setScene(scene)
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setWindowTitle("Reversi")
