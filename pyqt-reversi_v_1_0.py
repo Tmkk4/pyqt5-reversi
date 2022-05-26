@@ -97,7 +97,7 @@ class Reversi(QGraphicsItem):
 
                 elif self.board[y][x] == self.ItemW:
                     # 白石を置く:
-                    painter.setPen(Qt.white)  # Pen 黒色
+                    painter.setPen(Qt.black)  # Pen 黒色
                     painter.setBrush(Qt.white)  # Brush 白色
                     painter.drawEllipse(QPointF(50 + x*100, 50 + y*100), 30, 30)  # 座標QPointF(...)中心に 短径長径30の黒線で丸を描く(内部塗りつぶしなし)
 
